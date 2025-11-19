@@ -6,7 +6,7 @@ export default function Contact() {
   const [msg, setMsg] = useState("");
   const [sending, setSending] = useState(false);
 
-  // Optional but included for backend consistency
+  
   const [phone, setPhone] = useState("");
 
   const socials = [

@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const projects = [
+const hardcodedProjects = [
   {
     id: 1,
     title: "Library Management",
@@ -19,31 +19,49 @@ const projects = [
     id: 3,
     title: "Shopping Cart Project",
     desc: "Dynamic cart with quantity update and totals.",
-    img: "/projects/Shopping Cart.png",
+    img: "/projects/Shopping_Cart.png",
     live: "https://new-cart-assignment.vercel.app/",
   },
   {
     id: 4,
     title: "Task Management App",
-    desc: "Same project for testing pagination.",
-    img: "/projects/Task Management.png",
+    desc: "Task management project to track task.",
+    img: "/projects/Task_Management.png",
     live: "https://task-manager-gamma-rust.vercel.app/",
   },
   {
     id: 5,
     title: "Figma-Landing Page Project",
-    desc: "Same project for testing pagination.",
-    img: "/projects/Figma-Landing Page.png",
+    desc: "Figma page done to test my css skill.",
+    img: "/projects/Figma-Landing_Page.png",
     live: "https://landing-page-hazel-tau.vercel.app/",
   },
 ];
 
 export default function Projects() {
+  const [projects, setProjects] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const perPage = 3; // how many projects per page
+  const perPage = 3;
+
+  // Load hardcoded + uploaded projects
+  useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem("extraProjects")) || [];
+
+    const merged = [
+      ...hardcodedProjects,
+      ...stored.map((p) => ({
+        id: p.id,
+        title: p.title,
+        desc: p.description,
+        img: p.image_url,
+        live: p.live_url,
+      })),
+    ];
+
+    setProjects(merged);
+  }, []);
 
   const totalPages = Math.ceil(projects.length / perPage);
-
   const start = (currentPage - 1) * perPage;
   const paginatedProjects = projects.slice(start, start + perPage);
 
@@ -56,7 +74,6 @@ export default function Projects() {
     <section className="max-w-6xl mx-auto px-6 py-20">
       <h2 className="text-4xl font-bold mb-8">My Portfolio</h2>
 
-      {/* Projects Grid */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {paginatedProjects.map((p) => (
           <div
@@ -71,9 +88,7 @@ export default function Projects() {
 
             <div className="p-5">
               <h3 className="font-bold text-xl">{p.title}</h3>
-              <p className="mt-2 text-slate-600 dark:text-slate-300">
-                {p.desc}
-              </p>
+              <p className="mt-2 text-slate-600 dark:text-slate-300">{p.desc}</p>
 
               <div className="mt-4">
                 <a
@@ -91,7 +106,6 @@ export default function Projects() {
 
       {/* Pagination */}
       <div className="mt-10 flex justify-center items-center gap-3">
-        {/* Prev Button */}
         <button
           disabled={currentPage === 1}
           onClick={() => goToPage(currentPage - 1)}
@@ -104,7 +118,6 @@ export default function Projects() {
           Prev
         </button>
 
-        {/* Page Numbers */}
         {[...Array(totalPages)].map((_, i) => (
           <button
             key={i}
@@ -119,7 +132,6 @@ export default function Projects() {
           </button>
         ))}
 
-        {/* Next Button */}
         <button
           disabled={currentPage === totalPages}
           onClick={() => goToPage(currentPage + 1)}
