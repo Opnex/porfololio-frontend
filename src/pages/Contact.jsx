@@ -1,7 +1,13 @@
 import { useState } from "react";
 
 export default function Contact() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [msg, setMsg] = useState("");
+  const [sending, setSending] = useState(false);
+
+  // Optional but included for backend consistency
+  const [phone, setPhone] = useState("");
 
   const socials = [
     { name: "Instagram", link: "https://instagram.com/", icon: "/icons/instagram.jpg" },
@@ -11,10 +17,38 @@ export default function Contact() {
     { name: "LinkedIn", link: "https://www.linkedin.com/in/opeyemi-stephen-8b17bb35b/", icon: "/icons/linkin.png" },
   ];
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    alert("Message sent: " + msg);
-    setMsg("");
+    setSending(true);
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          phone,
+          message: msg,
+        }),
+      });
+
+      const data = await res.json();
+      alert(data.message);
+
+      // Clear fields
+      setName("");
+      setEmail("");
+      setMsg("");
+      setPhone("");
+
+    } catch (error) {
+      alert("Something went wrong. Please try again.");
+    }
+
+    setSending(false);
   };
 
   return (
@@ -23,7 +57,7 @@ export default function Contact() {
 
       <section className="grid md:grid-cols-2 gap-10">
 
-        {/* LEFT CARD — PERSONAL DETAILS */}
+        {/* ==== LEFT SIDE: DETAILS ==== */}
         <div className="bg-white/10 dark:bg-slate-800 p-8 rounded-2xl shadow-lg backdrop-blur-xl">
           <h3 className="text-2xl font-semibold mb-6">My Details</h3>
 
@@ -51,13 +85,12 @@ export default function Contact() {
                 target="_blank"
                 className="text-green-400 underline"
               >
-                08188065483
+                Message me on WhatsApp
               </a>
             </p>
           </div>
 
-          {/* Social Icons */}
-          <h4 className="mt-8 mb-3 text-xl font-semibold">Social Media</h4>
+          <h4 className="mt-8 mb-10 text-xl font-semibold">Social Media</h4>
           <div className="flex gap-4 flex-wrap">
             {socials.map((s) => (
               <a key={s.name} href={s.link} target="_blank" className="group">
@@ -76,6 +109,7 @@ export default function Contact() {
           </div>
         </div>
 
+        {/* ==== RIGHT SIDE: FORM ==== */}
         <form
           onSubmit={submit}
           className="bg-white/10 dark:bg-slate-800 p-8 rounded-2xl shadow-lg backdrop-blur-xl grid gap-6"
@@ -83,6 +117,8 @@ export default function Contact() {
           <h3 className="text-2xl font-semibold">Send a Message</h3>
 
           <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className="p-3 rounded-lg bg-white dark:bg-slate-700 outline-none focus:ring-2 focus:ring-green-500"
             placeholder="Your Name"
             required
@@ -90,9 +126,18 @@ export default function Contact() {
 
           <input
             type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="p-3 rounded-lg bg-white dark:bg-slate-700 outline-none focus:ring-2 focus:ring-green-500"
             placeholder="Your Email"
             required
+          />
+
+          <input
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="p-3 rounded-lg bg-white dark:bg-slate-700 outline-none focus:ring-2 focus:ring-green-500"
+            placeholder="Phone Number"
           />
 
           <textarea
@@ -103,8 +148,15 @@ export default function Contact() {
             required
           />
 
-          <button className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl text-lg font-medium transition">
-            Send Message
+          <button
+            disabled={sending}
+            className="
+              px-6 py-3 bg-green-500 hover:bg-green-600 
+              text-white rounded-xl text-lg font-medium 
+              transition disabled:bg-green-300
+            "
+          >
+            {sending ? "Sending..." : "Send Message"}
           </button>
         </form>
 

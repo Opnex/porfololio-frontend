@@ -1,8 +1,9 @@
 export default function Footer() {
   return (
-    <footer className="mt-16 border-t border-slate-200 dark:border-slate-800 py-8 text-center">
-      <p className="text-sm">
-        © {new Date().getFullYear()} Opnex — Built with React + Tailwind.
+    <footer className="mt-20 border-t border-slate-200 dark:border-slate-800 py-8 text-center">
+      <p className="text-sm opacity-80">
+        © {new Date().getFullYear()} <span className="font-semibold">Opnex</span> —
+        Built with React + Tailwind.
       </p>
     </footer>
   );
